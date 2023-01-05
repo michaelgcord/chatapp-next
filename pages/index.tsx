@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import io from 'Socket.IO-client';
+import io from '../node_modules/socket.io-client';
 let socket:any;
 
 type msgObj = {
