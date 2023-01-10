@@ -67,7 +67,7 @@ const Home = () => {
       e.preventDefault();
       if (input === '') return;
       storeMessage({ username: username, id: id, type: 'self', message: input});
-      socket.emit('input-sent', {username: username, id: id, type: 'other', input});
+      socket.emit('input-sent', {username: username, id: id, type: 'other', message: input});
       setInput('');
     }
   }
