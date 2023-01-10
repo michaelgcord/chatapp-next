@@ -16,6 +16,7 @@ type msgObj = {
 
 const Home = () => {
   const [input, setInput] = useState('');
+  const [usernameInput, setUsernameInput] = useState('');
   const [open, setOpen] = useState(true);
   const [username, setUsername] = useState('');
   const [id, setId] = useState(0);
@@ -45,6 +46,10 @@ const Home = () => {
     messageEndRef.current?.scrollIntoView({behavior: 'smooth'});
   }, [messages])
 
+  const handleUsernameChange = (e:any) => {
+    setUsernameInput(e.target.value);
+  }
+
   const handleChange = (e:any) => {
     setInput(e.target.value);
   }
@@ -58,11 +63,11 @@ const Home = () => {
     stores message into messages, and clears out the current message.
   */
   const handleEnter = (e:any) => {
-    if (e.key == 'Enter') {
+    if (e.key == 'Enter' || e.type == 'click') {
       e.preventDefault();
-      if (e.target.value === '') return;
-      storeMessage({ username: username, id: id, type: 'self', message: e.target.value});
-      socket.emit('input-sent', {username: username, id: id, type: 'other', message: e.target.value});
+      if (input === '') return;
+      storeMessage({ username: username, id: id, type: 'self', message: input});
+      socket.emit('input-sent', {username: username, id: id, type: 'other', input});
       setInput('');
     }
   }
@@ -71,17 +76,13 @@ const Home = () => {
     Sets the username and id of a client when prompted, then closes backdrop.
   */
   const handleUsernameSubmit = (e:any) => {
-    if (e.key == 'Enter') {
+    if (e.key == 'Enter' || e.type == 'click') {
       e.preventDefault();
-      if (e.target.value === '') return;
-      setUsername(e.target.value);
+      if (usernameInput === '') return;
+      setUsername(usernameInput);
       setOpen(false);
       setId(Math.floor(Math.random() * 10000) + 1);
     }
-  }
-
-  const handleClose = () => {
-    setOpen(true);
   }
 
   /* 
@@ -180,12 +181,11 @@ const Home = () => {
                 flex: 1,
               }}
           />
-          <SendIcon sx={{ color: '#d9d9d9', marginRight: '6px' }}/>
+          <SendIcon onClick={handleEnter} sx={{ color: '#d9d9d9', marginRight: '6px', cursor: 'pointer' }}/>
       </Paper>
       </div>
       <Backdrop
         open={open}
-        onClick={handleClose}
         invisible={true}
       >
         <div style={{
@@ -206,13 +206,15 @@ const Home = () => {
             backgroundColor: '#ffffff',
           }}> 
               <InputBase
+                  value={usernameInput}
+                  onChange={handleUsernameChange}
                   onKeyDown={handleUsernameSubmit}
                   sx={{
                     marginLeft: '12px',
                     flex: 1,
                   }}
               />
-              <SendIcon sx={{ color: '#d9d9d9', marginRight: '6px' }}/>
+              <SendIcon onClick={handleUsernameSubmit} sx={{ color: '#d9d9d9', marginRight: '6px', cursor: 'pointer' }}/>
           </Paper>          
         </div>
       </Backdrop>
